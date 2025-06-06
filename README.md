@@ -1,6 +1,13 @@
 # Kariri
 
+> **"Kariri" means "to learn by heart" in Swahili.**
+
 **Kariri** is a Swahili voice-conversation MVP built for a hackathon demo. It helps language learners practice active speaking with a real-time, AI-powered Swahili tutor using KrosAI's voice agent API and WebRTC.
+
+---
+
+## ⚠️ Note on Live Voice Testing
+As of this hackathon, it is not possible to test a live conversation with the KrosAI voice agent using third-party WebRTC/LiveKit clients. This is a limitation on the KrosAI side (confirmed by their CTO), not a problem with this project. The backend and session creation work as intended, and this will be updated when KrosAI enables external client support.
 
 ---
 
