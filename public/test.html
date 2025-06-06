@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <body>
+    <button id="join">Join voice room</button>
+
+    <script type="module">
+      import { VoiceAssistant } from
+        "https://cdn.jsdelivr.net/npm/krosai-web-sdk/dist/index.js";
+
+      // TODO: inject fresh values from the /voice endpoint
+      const ROOM_URL = "wss://agent.krosai.com/room/voice-abc123";
+      const TOKEN    = "eyJhbGciOi...";
+
+      document.getElementById("join").onclick = () => {
+        const va = new VoiceAssistant({ url: ROOM_URL, token: TOKEN });
+
+        va.on("agentMessage",   (m) => console.log("Agent:", m.text));
+        va.on("error",          console.error);
+        va.on("connectionLost", () => console.log("Disconnected"));
+      };
+    </script>
+  </body>
+</html>

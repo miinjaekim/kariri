@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kariri - Voice Agent Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            background: #f0f0f0;
+        }
+        .error {
+            color: #d32f2f;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kariri Voice Agent Test</h1>
+        
+        <div class="status" id="status">Status: Not connected</div>
+        
+        <button id="connectBtn">Connect to Voice Agent</button>
+        <button id="disconnectBtn" disabled>Disconnect</button>
+
+        <div id="error" class="error" style="display: none;"></div>
+    </div>
+
+    <!-- KrosAI Client SDK -->
+    <script src="https://unpkg.com/@krosai/client-sdk@latest/dist/krosai-client.js"></script>
+    
+    <script>
+    window.addEventListener('DOMContentLoaded', function() {
+        const statusEl = document.getElementById('status');
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const errorEl = document.getElementById('error');
+        let client = null;
+
+        // Function to show errors
+        function showError(message) {
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        // Function to update status
+        function updateStatus(message) {
+            statusEl.textContent = `Status: ${message}`;
+        }
+
+        // Connect to voice agent
+        connectBtn.addEventListener('click', async () => {
+            try {
+                updateStatus('Connecting...');
+                connectBtn.disabled = true;
+                errorEl.style.display = 'none';
+
+                // IMPORTANT: Update these values with the latest from your test script
+                client = new KrosaiClient({
+                    roomUrl: 'wss://krosai-mu6dycp1.livekit.cloud/room/voice-0b1d62db-fccb-48dc-8eaf-312366408197',
+                    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidXNlci0yMjlhZDNlZC0zMmU5LTQxMDgtOWZlYS01NTRiMDk5MzE2NjIiLCJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InZvaWNlLTBiMWQ2MmRiLWZjY2ItNDhkYy04ZWFmLTMxMjM2NjQwODE5NyIsImNhblB1Ymxpc2giOnRydWUsImNhblN1YnNjcmliZSI6dHJ1ZSwiY2FuUHVibGlzaERhdGEiOnRydWV9LCJzdWIiOiIyMjlhZDNlZC0zMmU5LTQxMDgtOWZlYS01NTRiMDk5MzE2NjIiLCJpc3MiOiJBUElzS0xOcHc0dlFjUmgiLCJuYmYiOjE3NDkyNDM2OTcsImV4cCI6MTc0OTI2NTI5N30.yWg37NwhlEJVaYPwQwYXtFiY5DxIgvEZmioEVoEvkd0'
+                });
+
+                // Handle connection events
+                client.on('connected', () => {
+                    updateStatus('Connected! You can speak now.');
+                    disconnectBtn.disabled = false;
+                });
+
+                client.on('disconnected', () => {
+                    updateStatus('Disconnected');
+                    connectBtn.disabled = false;
+                    disconnectBtn.disabled = true;
+                });
+
+                client.on('error', (error) => {
+                    showError(`Error: ${error.message}`);
+                    updateStatus('Error occurred');
+                    connectBtn.disabled = false;
+                    disconnectBtn.disabled = true;
+                });
+
+                // Connect to the room
+                await client.connect();
+            } catch (error) {
+                showError(`Failed to connect: ${error.message}`);
+                updateStatus('Connection failed');
+                connectBtn.disabled = false;
+            }
+        });
+
+        // Disconnect from voice agent
+        disconnectBtn.addEventListener('click', async () => {
+            try {
+                if (client) {
+                    await client.disconnect();
+                    client = null;
+                }
+            } catch (error) {
+                showError(`Failed to disconnect: ${error.message}`);
+            }
+        });
+    });
+    </script>
+</body>
+</html>
